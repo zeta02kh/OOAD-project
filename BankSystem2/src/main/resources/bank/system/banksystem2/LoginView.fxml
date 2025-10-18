@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="mainTabPane" xmlns:fx="http://javafx.com/fxml"
+         fx:controller="bank.system.banksystem2.controller.MainController">
+
+  <tabs>
+    <Tab text="Customer Management">
+      <content>
+        <fx:include source="customer.fxml" />
+      </content>
+    </Tab>
+
+    <Tab text="Account Operations">
+      <content>
+        <fx:include source="account.fxml" />
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>
