@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BankingController">
+    <tabs>
+        <Tab text="Customer Management">
+            <content>
+                <VBox spacing="10.0">
+                    <children>
+                        <Label text="Customer Management" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#showCreateCustomer" text="Create Customer" />
+                                <Button mnemonicParsing="false" onAction="#showFindCustomer" text="Find Customer" />
+                            </children>
+                        </HBox>
+                        <TextArea fx:id="customerInfoArea" editable="false" prefHeight="200.0" prefWidth="600.0" />
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+        <Tab text="Account Management">
+            <content>
+                <VBox spacing="10.0">
+                    <children>
+                        <Label text="Account Management" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <TextField fx:id="customerIdField" promptText="Customer ID" />
+                                <Button mnemonicParsing="false" onAction="#showOpenAccount" text="Open Account" />
+                                <Button mnemonicParsing="false" onAction="#showCustomerAccounts" text="View Accounts" />
+                            </children>
+                        </HBox>
+                        <ListView fx:id="accountsListView" prefHeight="200.0" prefWidth="600.0" />
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+        <Tab text="Transactions">
+            <content>
+                <VBox spacing="10.0">
+                    <children>
+                        <Label text="Transactions" />
+                        <HBox spacing="10.0">
+                            <children>
+                                <TextField fx:id="accountNumberField" promptText="Account Number" />
+                                <TextField fx:id="amountField" promptText="Amount" />
+                                <Button mnemonicParsing="false" onAction="#handleDeposit" text="Deposit" />
+                                <Button mnemonicParsing="false" onAction="#handleWithdraw" text="Withdraw" />
+                            </children>
+                        </HBox>
+                        <TextArea fx:id="transactionInfoArea" editable="false" prefHeight="200.0" prefWidth="600.0" />
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>
