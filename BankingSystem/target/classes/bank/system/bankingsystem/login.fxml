@@ -8,13 +8,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LoginController">
+<VBox alignment="CENTER" spacing="20.0"
+      xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bank.system.bankingsystem.LoginController">
+
     <children>
         <Label text="Banking System Login">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
+
         <VBox spacing="10.0">
             <children>
                 <Label text="Username:" />
@@ -23,9 +28,11 @@
                 <PasswordField fx:id="passwordField" />
             </children>
         </VBox>
+
         <Button mnemonicParsing="false" onAction="#handleLogin" text="Login" />
         <Label fx:id="messageLabel" textFill="RED" />
     </children>
+
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>

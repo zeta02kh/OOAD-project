@@ -11,7 +11,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<TabPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BankingController">
+<TabPane xmlns="http://javafx.com/javafx/11.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="bank.system.bankingsystem.BankingController">
+
     <tabs>
         <Tab text="Customer Management">
             <content>
@@ -32,6 +35,7 @@
                 </VBox>
             </content>
         </Tab>
+
         <Tab text="Account Management">
             <content>
                 <VBox spacing="10.0">
@@ -52,6 +56,7 @@
                 </VBox>
             </content>
         </Tab>
+
         <Tab text="Transactions">
             <content>
                 <VBox spacing="10.0">
