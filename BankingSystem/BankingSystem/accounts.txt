@@ -1,0 +1,10 @@
+SAVINGS|SA001|1500.00|Main Branch|C001
+INVESTMENT|IA001|2500.00|Main Branch|C001
+CHEQUE|CA001|3000.00|Main Branch|C001|ABC Company|123 Work St
+SAVINGS|SA002|2000.00|Downtown Branch|C002
+INVESTMENT|IA002|3500.00|Downtown Branch|C002
+CHEQUE|CA003|4000.00|Main Branch|C003|XYZ Corp|456 Office Ave
+CHEQUE|CA004|8000.00|Business Branch|C004|Brown Enterprises|123 Business Ave
+CHEQUE|CA005|8000.00|Business Branch|C005|TechCorp Ltd|123 Business Ave
+INVESTMENT|IA005|10000.00|Business Branch|C005
+CHEQUE|CA006|6000.00|Business Branch|C006|BuildIt Construction|456 Factory Rd

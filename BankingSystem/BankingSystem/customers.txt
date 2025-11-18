@@ -1,0 +1,6 @@
+INDIVIDUAL|C001|John|Doe|123 Main St|john.doe@email.com|123456789|ID123456
+INDIVIDUAL|C002|Jane|Smith|456 Oak Ave|jane.smith@email.com|987654321|ID654321
+INDIVIDUAL|C003|Alice|Johnson|789 Pine Rd|alice.johnson@email.com|555123456|ID789012
+CORPORATE|C004|Bob|Brown|321 Elm St|bob.brown@email.com|555987654|Brown Enterprises|123 Business Ave|REG123456
+CORPORATE|C005|TechCorp|Ltd|Tech Park|info@techcorp.com|555444333|TechCorp Ltd|123 Business Ave|REG123456
+CORPORATE|C006|BuildIt|Construction|Industrial Zone|contact@buildit.com|555666777|BuildIt Construction|456 Factory Rd|REG789012
