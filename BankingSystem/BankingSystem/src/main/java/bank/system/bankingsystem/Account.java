@@ -1,6 +1,10 @@
 package bank.system.bankingsystem;
 
-public abstract class Account implements AccountOperations {
+import java.io.Serializable;
+
+public abstract class Account implements AccountOperations, Serializable {
+    private static final long serialVersionUID = 1L;
+
     protected String accountNumber;
     protected double balance;
     protected String branch;

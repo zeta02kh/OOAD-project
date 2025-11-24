@@ -1,6 +1,7 @@
 package bank.system.bankingsystem;
 
 public class IndividualCustomer extends Customer {
+    private static final long serialVersionUID = 1L;
     private String idNumber;
 
     public IndividualCustomer(String customerId, String firstName, String surname,

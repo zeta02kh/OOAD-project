@@ -4,195 +4,103 @@ import java.io.*;
 import java.util.*;
 
 public class FileDataService {
-    private static final String CUSTOMERS_FILE = "customers.txt";
-    private static final String ACCOUNTS_FILE = "accounts.txt";
-    private static final String TRANSACTIONS_FILE = "transactions.txt";
-    private static final String PASSWORDS_FILE = "passwords.txt";
+    private final File customersFile;
+    private final File accountsFile;
+    private final File passwordsFile;
+    private final File transactionsFile;
 
-    // Customer operations
-    public void saveCustomer(Customer customer) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileWriter(CUSTOMERS_FILE, true))) {
-            out.println(serializeCustomer(customer));
-        }
+    public FileDataService() {
+        File base = new File(System.getProperty("user.dir"), "data");
+        if (!base.exists()) base.mkdirs();
+        customersFile = new File(base, "customers.dat");
+        accountsFile = new File(base, "accounts.dat");
+        passwordsFile = new File(base, "passwords.dat");
+        transactionsFile = new File(base, "transactions.log");
     }
 
+    // Customers
     public List<Customer> loadAllCustomers() throws IOException {
-        List<Customer> customers = new ArrayList<>();
-        File file = new File(CUSTOMERS_FILE);
-        if (!file.exists()) return customers;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Customer customer = deserializeCustomer(line);
-                if (customer != null) {
-                    customers.add(customer);
-                }
+        if (!customersFile.exists()) return new ArrayList<>();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(customersFile))) {
+            Object obj = in.readObject();
+            if (obj instanceof List) {
+                return (List<Customer>) obj;
             }
+            return new ArrayList<>();
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
-        return customers;
     }
 
-    // Account operations
+    public void saveCustomer(Customer customer) throws IOException {
+        List<Customer> customers = loadAllCustomers();
+        customers.removeIf(c -> c.getCustomerId().equals(customer.getCustomerId()));
+        customers.add(customer);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(customersFile))) {
+            out.writeObject(new ArrayList<>(customers));
+        }
+    }
+
+    // Accounts
+    public List<Account> loadAllAccounts() throws IOException {
+        if (!accountsFile.exists()) return new ArrayList<>();
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(accountsFile))) {
+            Object obj = in.readObject();
+            if (obj instanceof List) {
+                return (List<Account>) obj;
+            }
+            return new ArrayList<>();
+        } catch (ClassNotFoundException | InvalidClassException | StreamCorruptedException e) {
+            System.err.println("Warning: Account data file corrupted, starting fresh");
+            return new ArrayList<>();
+        }
+    }
+
     public void saveAccount(Account account) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileWriter(ACCOUNTS_FILE, true))) {
-            out.println(serializeAccount(account));
+        List<Account> accounts = loadAllAccounts();
+        accounts.removeIf(a -> a.getAccountNumber().equals(account.getAccountNumber()));
+        accounts.add(account);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(accountsFile))) {
+            out.writeObject(new ArrayList<>(accounts));
         }
     }
 
-    public List<Account> loadAllAccounts(List<Customer> customers) throws IOException {
-        List<Account> accounts = new ArrayList<>();
-        File file = new File(ACCOUNTS_FILE);
-        if (!file.exists()) return accounts;
-
-        Map<String, Customer> customerMap = new HashMap<>();
-        for (Customer customer : customers) {
-            customerMap.put(customer.getCustomerId(), customer);
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Account account = deserializeAccount(line, customerMap);
-                if (account != null) {
-                    accounts.add(account);
-                }
-            }
-        }
-        return accounts;
-    }
-
-    // Transaction operations
-    public void saveTransaction(String transaction) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileWriter(TRANSACTIONS_FILE, true))) {
-            out.println(transaction);
-        }
-    }
-
-    public List<String> loadAllTransactions() throws IOException {
-        List<String> transactions = new ArrayList<>();
-        File file = new File(TRANSACTIONS_FILE);
-        if (!file.exists()) return transactions;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                transactions.add(line);
-            }
-        }
-        return transactions;
-    }
-
-    // Password operations
-    public void saveCustomerPassword(String customerId, String password) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileWriter(PASSWORDS_FILE, true))) {
-            out.println(customerId + "|" + password);
-        }
-    }
-
+    // Passwords
     public Map<String, String> loadAllPasswords() throws IOException {
-        Map<String, String> passwords = new HashMap<>();
-        File file = new File(PASSWORDS_FILE);
-        if (!file.exists()) return passwords;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 2) {
-                    passwords.put(parts[0], parts[1]);
-                }
+        if (!passwordsFile.exists()) return new HashMap<>();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(passwordsFile))) {
+            Object obj = in.readObject();
+            if (obj instanceof Map) {
+                return (Map<String, String>) obj;
             }
+            return new HashMap<>();
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
-        return passwords;
     }
 
-    public boolean verifyCustomerPassword(String customerId, String password) throws IOException {
-        Map<String, String> passwords = loadAllPasswords();
-        return passwords.containsKey(customerId) && passwords.get(customerId).equals(password);
+    public void saveCustomerPassword(String customerId, String password) throws IOException {
+        Map<String, String> map = loadAllPasswords();
+        map.put(customerId, password);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(passwordsFile))) {
+            out.writeObject(map);
+        }
     }
 
-    // Serialization methods
-    private String serializeCustomer(Customer customer) {
-        if (customer instanceof IndividualCustomer) {
-            IndividualCustomer ic = (IndividualCustomer) customer;
-            return String.format("INDIVIDUAL|%s|%s|%s|%s|%s|%s|%s",
-                    ic.getCustomerId(), ic.getFirstName(), ic.getSurname(),
-                    ic.getAddress(), ic.getEmail(), ic.getPhoneNumber(), ic.getIdNumber());
-        } else if (customer instanceof CorporateCustomer) {
-            CorporateCustomer cc = (CorporateCustomer) customer;
-            return String.format("CORPORATE|%s|%s|%s|%s|%s|%s|%s|%s|%s",
-                    cc.getCustomerId(), cc.getFirstName(), cc.getSurname(),
-                    cc.getAddress(), cc.getEmail(), cc.getPhoneNumber(),
-                    cc.getCompanyName(), cc.getCompanyAddress(), cc.getRegistrationNumber());
+    // Transactions (append to log)
+    public void saveTransaction(String transaction) throws IOException {
+        try (FileWriter fw = new FileWriter(transactionsFile, true)) {
+            fw.write(transaction + System.lineSeparator());
         }
-        return "";
     }
 
-    private Customer deserializeCustomer(String data) {
-        String[] parts = data.split("\\|");
-        if (parts.length < 7) return null;
-
-        String type = parts[0];
-        String customerId = parts[1];
-        String firstName = parts[2];
-        String surname = parts[3];
-        String address = parts[4];
-        String email = parts[5];
-        String phone = parts[6];
-
-        if ("INDIVIDUAL".equals(type) && parts.length >= 8) {
-            return new IndividualCustomer(customerId, firstName, surname, address, email, phone, parts[7]);
-        } else if ("CORPORATE".equals(type) && parts.length >= 10) {
-            return new CorporateCustomer(customerId, firstName, surname, address, email, phone,
-                    parts[7], parts[8], parts[9]);
-        }
-        return null;
-    }
-
-    private String serializeAccount(Account account) {
-        if (account instanceof SavingsAccount) {
-            return String.format("SAVINGS|%s|%.2f|%s|%s",
-                    account.getAccountNumber(), account.getBalance(),
-                    account.getBranch(), account.getCustomer().getCustomerId());
-        } else if (account instanceof InvestmentAccount) {
-            return String.format("INVESTMENT|%s|%.2f|%s|%s",
-                    account.getAccountNumber(), account.getBalance(),
-                    account.getBranch(), account.getCustomer().getCustomerId());
-        } else if (account instanceof ChequeAccount) {
-            ChequeAccount ca = (ChequeAccount) account;
-            return String.format("CHEQUE|%s|%.2f|%s|%s|%s|%s",
-                    account.getAccountNumber(), account.getBalance(),
-                    account.getBranch(), account.getCustomer().getCustomerId(),
-                    ca.getEmployer(), ca.getEmployerAddress());
-        }
-        return "";
-    }
-
-    private Account deserializeAccount(String data, Map<String, Customer> customerMap) {
-        String[] parts = data.split("\\|");
-        if (parts.length < 5) return null;
-
-        String type = parts[0];
-        String accountNumber = parts[1];
-        double balance = Double.parseDouble(parts[2]);
-        String branch = parts[3];
-        String customerId = parts[4];
-
-        Customer customer = customerMap.get(customerId);
-        if (customer == null) return null;
-
-        switch (type) {
-            case "SAVINGS":
-                return new SavingsAccount(accountNumber, balance, branch, customer);
-            case "INVESTMENT":
-                return new InvestmentAccount(accountNumber, balance, branch, customer);
-            case "CHEQUE":
-                if (parts.length >= 7) {
-                    return new ChequeAccount(accountNumber, balance, branch, customer, parts[5], parts[6]);
-                }
-                break;
-        }
-        return null;
+    // Authentication helper
+    public boolean authenticateUser(String username, String password) throws IOException {
+        Map<String, String> map = loadAllPasswords();
+        // special admin
+        if ("admin".equals(username) && "admin123".equals(password)) return true;
+        String stored = map.get(username);
+        return stored != null && stored.equals(password);
     }
 }

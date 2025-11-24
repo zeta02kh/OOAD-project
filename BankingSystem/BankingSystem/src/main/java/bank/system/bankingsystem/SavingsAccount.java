@@ -1,6 +1,7 @@
 package bank.system.bankingsystem;
 
 public class SavingsAccount extends Account {
+    private static final long serialVersionUID = 1L;
     private static final double MONTHLY_INTEREST_RATE = 0.0005; // 0.05%
 
     public SavingsAccount(String accountNumber, double balance, String branch, Customer customer) {
@@ -9,7 +10,7 @@ public class SavingsAccount extends Account {
 
     @Override
     public boolean withdraw(double amount) {
-
+        // Per assignment: Savings accounts do NOT allow withdrawals
         return false;
     }
 

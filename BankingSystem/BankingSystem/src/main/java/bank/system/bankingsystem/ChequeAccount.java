@@ -1,6 +1,8 @@
 package bank.system.bankingsystem;
 
 public class ChequeAccount extends Account {
+    private static final long serialVersionUID = 1L;
+
     private String employer;
     private String employerAddress;
 
@@ -22,7 +24,7 @@ public class ChequeAccount extends Account {
 
     @Override
     public void calculateInterest() {
-
+        // Cheque accounts don't earn interest in the assignment
     }
 
     @Override

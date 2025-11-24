@@ -1,7 +1,7 @@
-
 package bank.system.bankingsystem;
 
 public class InvestmentAccount extends Account {
+    private static final long serialVersionUID = 1L;
     private static final double MONTHLY_INTEREST_RATE = 0.05; // 5%
     private static final double MIN_OPENING_BALANCE = 500.00;
 

@@ -10,7 +10,6 @@ public class BankingApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/bank/system/bankingsystem/login.fxml"));
         Parent root = loader.load();
 

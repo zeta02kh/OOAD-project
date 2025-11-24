@@ -3,7 +3,7 @@ package bank.system.bankingsystem;
 import java.util.List;
 
 public interface BankOperations {
-    boolean openAccount(Customer customer, String accountType, double initialDeposit);
+    boolean openAccount(Customer customer, String accountType, double initialDeposit, String... extra);
     boolean closeAccount(String accountNumber);
     List<Account> getCustomerAccounts(String customerId);
     Customer findCustomerById(String customerId);

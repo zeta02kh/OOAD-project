@@ -4,10 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -44,10 +41,19 @@ public class LoginController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/bank/system/bankingsystem/banking_system.fxml"));
                 Parent root = loader.load();
 
+                BankingController mainController = loader.getController();
+                mainController.setBankingService(bankingService);
+
                 Stage stage = (Stage) usernameField.getScene().getWindow();
-                Scene scene = new Scene(root, 800, 600);
+                Scene scene = new Scene(root, 1000, 650);
                 stage.setScene(scene);
-                stage.setTitle("Banking System - Main Dashboard");
+
+                if ("admin".equals(username)) {
+                    stage.setTitle("Banking System - Admin Dashboard");
+                } else {
+                    stage.setTitle("Banking System - Customer Dashboard (" + username + ")");
+                }
+
                 stage.centerOnScreen();
 
             } catch (Exception e) {
