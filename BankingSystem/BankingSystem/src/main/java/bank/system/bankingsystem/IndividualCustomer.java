@@ -1,7 +1,6 @@
 package bank.system.bankingsystem;
 
 public class IndividualCustomer extends Customer {
-    private static final long serialVersionUID = 1L;
     private String idNumber;
 
     public IndividualCustomer(String customerId, String firstName, String surname,
@@ -10,16 +9,16 @@ public class IndividualCustomer extends Customer {
         this.idNumber = idNumber;
     }
 
+    public String getIdNumber() { return idNumber; }
+    public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
+
     @Override
     public String toString() {
         return super.toString() + String.format("\nID Number: %s", idNumber);
     }
 
-    public String getIdNumber() { return idNumber; }
-    public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
-
     @Override
     public String getCustomerType() {
-        return "Individual";
+        return "INDIVIDUAL";
     }
 }

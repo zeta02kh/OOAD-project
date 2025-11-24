@@ -1,14 +1,12 @@
 package bank.system.bankingsystem;
 
 public class ChequeAccount extends Account {
-    private static final long serialVersionUID = 1L;
-
     private String employer;
     private String employerAddress;
 
     public ChequeAccount(String accountNumber, double balance, String branch,
                          Customer customer, String employer, String employerAddress) {
-        super(accountNumber, balance, branch, customer, "Cheque");
+        super(accountNumber, balance, branch, customer, "CHEQUE");
         this.employer = employer;
         this.employerAddress = employerAddress;
     }
@@ -24,12 +22,12 @@ public class ChequeAccount extends Account {
 
     @Override
     public void calculateInterest() {
-        // Cheque accounts don't earn interest in the assignment
+        // no interest for cheque accounts
     }
 
     @Override
     public String getAccountInfo() {
-        return String.format("Cheque Account: %s, Balance: BWP%.2f, Customer: %s %s, Employer: %s",
+        return String.format("Cheque %s | BWP %.2f | %s %s | Employer: %s",
                 accountNumber, balance, customer.getFirstName(), customer.getSurname(), employer);
     }
 

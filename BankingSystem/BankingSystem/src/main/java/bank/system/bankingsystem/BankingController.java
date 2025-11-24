@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BankingController {
 
@@ -18,15 +19,12 @@ public class BankingController {
 
     private BankingService bankingService;
 
-    // Called from LoginController
     public void setBankingService(BankingService bankingService) {
         this.bankingService = bankingService;
         refreshAllData();
     }
 
-    // ============================================================
     // CUSTOMER MANAGEMENT
-    // ============================================================
 
     @FXML
     private void showCreateCustomer() {
@@ -56,7 +54,7 @@ public class BankingController {
         Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Create Individual Customer");
 
-        TextField dlgCustomerId = new TextField();
+        TextField customerIdField = new TextField();
         TextField firstNameField = new TextField();
         TextField surnameField = new TextField();
         TextField addressField = new TextField();
@@ -66,7 +64,7 @@ public class BankingController {
         PasswordField passwordField = new PasswordField();
 
         VBox content = new VBox(10,
-                new HBox(10, new Label("Customer ID:"), dlgCustomerId),
+                new HBox(10, new Label("Customer ID:"), customerIdField),
                 new HBox(10, new Label("First Name:"), firstNameField),
                 new HBox(10, new Label("Surname:"), surnameField),
                 new HBox(10, new Label("Address:"), addressField),
@@ -82,13 +80,13 @@ public class BankingController {
         dialog.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 boolean success = bankingService.createIndividualCustomer(
-                        dlgCustomerId.getText().trim(),
-                        firstNameField.getText().trim(),
-                        surnameField.getText().trim(),
-                        addressField.getText().trim(),
-                        emailField.getText().trim(),
-                        phoneField.getText().trim(),
-                        idNumberField.getText().trim(),
+                        customerIdField.getText(),
+                        firstNameField.getText(),
+                        surnameField.getText(),
+                        addressField.getText(),
+                        emailField.getText(),
+                        phoneField.getText(),
+                        idNumberField.getText(),
                         passwordField.getText()
                 );
 
@@ -96,7 +94,7 @@ public class BankingController {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Individual customer created!");
                     refreshAllData();
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to create customer! ID may already exist or invalid data.");
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to create customer! Maybe ID exists.");
                 }
             }
             return null;
@@ -109,7 +107,7 @@ public class BankingController {
         Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("Create Corporate Customer");
 
-        TextField dlgCustomerId = new TextField();
+        TextField customerIdField = new TextField();
         TextField firstNameField = new TextField();
         TextField surnameField = new TextField();
         TextField addressField = new TextField();
@@ -121,7 +119,7 @@ public class BankingController {
         PasswordField passwordField = new PasswordField();
 
         VBox content = new VBox(10,
-                new HBox(10, new Label("Customer ID:"), dlgCustomerId),
+                new HBox(10, new Label("Customer ID:"), customerIdField),
                 new HBox(10, new Label("First Name:"), firstNameField),
                 new HBox(10, new Label("Surname:"), surnameField),
                 new HBox(10, new Label("Address:"), addressField),
@@ -139,15 +137,15 @@ public class BankingController {
         dialog.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 boolean success = bankingService.createCorporateCustomer(
-                        dlgCustomerId.getText().trim(),
-                        firstNameField.getText().trim(),
-                        surnameField.getText().trim(),
-                        addressField.getText().trim(),
-                        emailField.getText().trim(),
-                        phoneField.getText().trim(),
-                        companyNameField.getText().trim(),
-                        companyAddressField.getText().trim(),
-                        registrationField.getText().trim(),
+                        customerIdField.getText(),
+                        firstNameField.getText(),
+                        surnameField.getText(),
+                        addressField.getText(),
+                        emailField.getText(),
+                        phoneField.getText(),
+                        companyNameField.getText(),
+                        companyAddressField.getText(),
+                        registrationField.getText(),
                         passwordField.getText()
                 );
 
@@ -155,7 +153,7 @@ public class BankingController {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Corporate customer created!");
                     refreshAllData();
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to create customer! ID may already exist or invalid data.");
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to create customer! Maybe ID exists.");
                 }
             }
             return null;
@@ -171,12 +169,12 @@ public class BankingController {
         dialog.setHeaderText("Enter Customer ID:");
 
         dialog.showAndWait().ifPresent(customerId -> {
-            Customer customer = bankingService.findCustomerById(customerId.trim());
+            Customer customer = bankingService.findCustomerById(customerId);
 
             if (customer != null) {
                 customerInfoArea.setText(customer.toString());
 
-                List<Account> accounts = bankingService.getCustomerAccounts(customerId.trim());
+                List<Account> accounts = bankingService.getCustomerAccounts(customerId);
                 StringBuilder info = new StringBuilder("\n\nAccounts:\n");
                 for (Account a : accounts) info.append(a.getAccountInfo()).append("\n");
                 customerInfoArea.appendText(info.toString());
@@ -187,122 +185,104 @@ public class BankingController {
         });
     }
 
-    // ============================================================
     // ACCOUNT MANAGEMENT
-    // ============================================================
 
     @FXML
     private void showOpenAccount() {
-        String customerId = customerIdField.getText().trim();
+        String custId = customerIdField.getText().trim();
+        if (custId.isEmpty()) { showAlert(Alert.AlertType.WARNING, "Warning", "Enter a Customer ID first!"); return; }
+        Customer customer = bankingService.findCustomerById(custId);
+        if (customer == null) { showAlert(Alert.AlertType.ERROR, "Error", "Customer not found!"); return; }
 
-        if (customerId.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Warning", "Enter a Customer ID first!");
-            return;
-        }
-
-        Customer customer = bankingService.findCustomerById(customerId);
-        if (customer == null) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Customer not found!");
-            return;
-        }
-
-        ChoiceDialog<String> typeDialog = new ChoiceDialog<>("SAVINGS",
-                "SAVINGS", "INVESTMENT", "CHEQUE");
+        ChoiceDialog<String> typeDialog = new ChoiceDialog<>("SAVINGS", "SAVINGS", "INVESTMENT", "CHEQUE");
         typeDialog.setTitle("Open Account");
         typeDialog.setHeaderText("Select Account Type");
 
-        typeDialog.showAndWait().ifPresent(type -> {
-            TextInputDialog amountDialog = new TextInputDialog();
-            amountDialog.setTitle("Initial Deposit");
-            amountDialog.setHeaderText("Enter opening balance");
-            amountDialog.setContentText("Amount:");
+        Optional<String> res = typeDialog.showAndWait();
+        if (!res.isPresent()) return;
+        String type = res.get();
 
-            amountDialog.showAndWait().ifPresent(amountStr -> {
-                try {
-                    double amount = Double.parseDouble(amountStr);
+        // get opening amount
+        TextInputDialog amountDialog = new TextInputDialog();
+        amountDialog.setTitle("Initial Deposit");
+        amountDialog.setHeaderText("Enter opening balance");
+        amountDialog.setContentText("Amount:");
+        Optional<String> amtRes = amountDialog.showAndWait();
+        if (!amtRes.isPresent()) return;
 
-                    if ("INVESTMENT".equalsIgnoreCase(type) && amount < 500) {
-                        showAlert(Alert.AlertType.ERROR, "Error",
-                                "Investment accounts require at least BWP 500.00");
-                        return;
-                    }
+        double amount;
+        try { amount = Double.parseDouble(amtRes.get()); }
+        catch (Exception e) { showAlert(Alert.AlertType.ERROR, "Error", "Invalid amount!"); return; }
 
-                    if ("CHEQUE".equalsIgnoreCase(type)) {
-                        // request employer info
-                        TextInputDialog empDialog = new TextInputDialog();
-                        empDialog.setTitle("Employer Info");
-                        empDialog.setHeaderText("Enter Employer Name:");
-                        empDialog.showAndWait().ifPresent(employer -> {
-                            TextInputDialog empAddr = new TextInputDialog();
-                            empAddr.setTitle("Employer Address");
-                            empAddr.setHeaderText("Enter Employer Address:");
-                            empAddr.showAndWait().ifPresent(employerAddress -> {
-                                boolean success = bankingService.openAccount(customer, type, amount, employer, employerAddress);
-                                if (success) {
-                                    showAlert(Alert.AlertType.INFORMATION, "Success", type + " account opened!");
-                                    refreshAllData();
-                                } else {
-                                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to open account!");
-                                }
-                            });
-                        });
-                    } else {
-                        boolean success = bankingService.openAccount(customer, type, amount);
-                        if (success) {
-                            showAlert(Alert.AlertType.INFORMATION, "Success", type + " account opened!");
-                            refreshAllData();
-                        } else {
-                            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open account!");
-                        }
-                    }
-                } catch (Exception e) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Invalid amount!");
-                }
-            });
-        });
+        if ("INVESTMENT".equalsIgnoreCase(type) && amount < 500) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Investment accounts require at least BWP 500.00");
+            return;
+        }
+
+        if ("CHEQUE".equalsIgnoreCase(type)) {
+            if (!(customer instanceof IndividualCustomer)) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Only individual customers can open cheque accounts.");
+                return;
+            }
+            // ask for employer info
+            Dialog<ButtonType> empDialog = new Dialog<>();
+            empDialog.setTitle("Employment Info (Required for Cheque Account)");
+            TextField empField = new TextField();
+            TextField empAddrField = new TextField();
+            VBox v = new VBox(10, new HBox(10, new Label("Employer:"), empField), new HBox(10, new Label("Employer Addr:"), empAddrField));
+            empDialog.getDialogPane().setContent(v);
+            empDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> empRes = empDialog.showAndWait();
+            if (!empRes.isPresent() || empRes.get() != ButtonType.OK) return;
+
+            String emp = empField.getText().trim();
+            String empAddr = empAddrField.getText().trim();
+            if (emp.isEmpty() || empAddr.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Employer details required for cheque account.");
+                return;
+            }
+
+            boolean success = bankingService.openChequeAccount(customer, amount, emp, empAddr);
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "CHEQUE account opened!");
+                refreshAllData();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to open cheque account!");
+            }
+            return;
+        }
+
+        boolean success = bankingService.openAccount(customer, type, amount);
+        if (success) {
+            showAlert(Alert.AlertType.INFORMATION, "Success", type + " account opened!");
+            refreshAllData();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open account!");
+        }
     }
 
     @FXML
     private void showCustomerAccounts() {
         String id = customerIdField.getText().trim();
-        if (id.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Warning", "Enter a Customer ID!");
-            return;
-        }
-
-        List<Account> accounts = bankingService.getCustomerAccounts(id);
+        if (id.isEmpty()) { showAlert(Alert.AlertType.WARNING, "Warning", "Enter a Customer ID!"); return; }
+        List<Account> list = bankingService.getCustomerAccounts(id);
         accountsListView.getItems().clear();
-
-        if (accounts.isEmpty()) {
-            accountsListView.getItems().add("No accounts found.");
-        } else {
-            for (Account a : accounts) accountsListView.getItems().add(a.getAccountInfo());
-        }
+        if (list.isEmpty()) accountsListView.getItems().add("No accounts found.");
+        else list.forEach(a -> accountsListView.getItems().add(a.getAccountInfo()));
     }
 
-    // ============================================================
     // TRANSACTIONS
-    // ============================================================
 
     @FXML
     private void handleDeposit() {
         try {
             String acc = accountNumberField.getText().trim();
             double amount = Double.parseDouble(amountField.getText().trim());
-
             Account a = bankingService.findAccountByNumber(acc);
-            if (a == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Account not found!");
-                return;
-            }
-
-            a.deposit(amount);
-            bankingService.saveAccount(a);
-            bankingService.logTransaction("DEPOSIT: " + amount + " to " + acc);
-
-            transactionInfoArea.setText("Deposit successful!\nNew Balance: BWP" + String.format("%.2f", a.getBalance()));
+            if (a == null) { showAlert(Alert.AlertType.ERROR, "Error", "Account not found!"); return; }
+            bankingService.depositToAccount(acc, amount);
+            transactionInfoArea.setText("Deposit successful!\nNew Balance: BWP" + a.getBalance());
             refreshAllData();
-
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Invalid amount!");
         }
@@ -313,58 +293,33 @@ public class BankingController {
         try {
             String acc = accountNumberField.getText().trim();
             double amount = Double.parseDouble(amountField.getText().trim());
-
             Account a = bankingService.findAccountByNumber(acc);
-            if (a == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Account not found!");
-                return;
-            }
-
+            if (a == null) { showAlert(Alert.AlertType.ERROR, "Error", "Account not found!"); return; }
             if (a instanceof SavingsAccount) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Savings accounts do NOT allow withdrawals!");
                 return;
             }
-
-            if (a.withdraw(amount)) {
-                bankingService.saveAccount(a);
-                bankingService.logTransaction("WITHDRAW: " + amount + " from " + acc);
-                transactionInfoArea.setText("Withdrawal successful!\nNew Balance: BWP" + String.format("%.2f", a.getBalance()));
+            boolean ok = bankingService.withdrawFromAccount(acc, amount);
+            if (ok) {
+                transactionInfoArea.setText("Withdrawal successful!\nNew Balance: BWP" + a.getBalance());
                 refreshAllData();
             } else {
-                transactionInfoArea.setText("Withdrawal failed! Insufficient funds or invalid amount.");
+                transactionInfoArea.setText("Withdrawal failed! Insufficient funds.");
             }
-
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Invalid input!");
         }
     }
 
-    // ============================================================
-    // INTEREST
-    // ============================================================
-
     @FXML
     private void calculateAllInterest() {
-        List<Account> accounts = bankingService.getAllAccounts();
-        int count = 0;
-
-        for (Account a : accounts) {
-            if (a instanceof SavingsAccount || a instanceof InvestmentAccount) {
-                a.calculateInterest();
-                bankingService.saveAccount(a);
-                count++;
-            }
-        }
-
-        transactionInfoArea.setText("Interest applied to: " + count + " accounts.");
-        bankingService.persistAllAccounts();
+        bankingService.calculateAllInterest();
+        transactionInfoArea.setText("Interest applied.");
         refreshAllData();
     }
 
     private void refreshAllData() {
-        if (!customerIdField.getText().trim().isEmpty()) {
-            showCustomerAccounts();
-        }
+        if (!customerIdField.getText().trim().isEmpty()) showCustomerAccounts();
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {

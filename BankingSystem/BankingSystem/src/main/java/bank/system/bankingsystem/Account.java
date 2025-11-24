@@ -1,10 +1,6 @@
 package bank.system.bankingsystem;
 
-import java.io.Serializable;
-
-public abstract class Account implements AccountOperations, Serializable {
-    private static final long serialVersionUID = 1L;
-
+public abstract class Account {
     protected String accountNumber;
     protected double balance;
     protected String branch;
@@ -25,19 +21,17 @@ public abstract class Account implements AccountOperations, Serializable {
     public Customer getCustomer() { return customer; }
     public String getAccountType() { return accountType; }
 
-    @Override
     public void deposit(double amount) {
         if (amount > 0) {
             balance += amount;
         }
     }
 
-    @Override
     public abstract boolean withdraw(double amount);
-
-    @Override
     public abstract void calculateInterest();
-
-    @Override
     public abstract String getAccountInfo();
+
+    // Serialization-friendly line format for accounts file:
+    // ACCOUNTTYPE|ACCNUM|BALANCE|BRANCH|CUSTOMERID|EMPLOYER|EMPLOYER_ADDR
+    // EMPLOYER fields are optional (only for Cheque accounts).
 }

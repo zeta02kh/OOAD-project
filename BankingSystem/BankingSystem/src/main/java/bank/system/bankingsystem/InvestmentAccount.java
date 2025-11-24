@@ -1,12 +1,11 @@
 package bank.system.bankingsystem;
 
 public class InvestmentAccount extends Account {
-    private static final long serialVersionUID = 1L;
     private static final double MONTHLY_INTEREST_RATE = 0.05; // 5%
     private static final double MIN_OPENING_BALANCE = 500.00;
 
     public InvestmentAccount(String accountNumber, double balance, String branch, Customer customer) {
-        super(accountNumber, balance, branch, customer, "Investment");
+        super(accountNumber, balance, branch, customer, "INVESTMENT");
     }
 
     public static boolean isValidOpeningBalance(double amount) {
@@ -24,13 +23,12 @@ public class InvestmentAccount extends Account {
 
     @Override
     public void calculateInterest() {
-        double interest = balance * MONTHLY_INTEREST_RATE;
-        balance += interest;
+        balance += balance * MONTHLY_INTEREST_RATE;
     }
 
     @Override
     public String getAccountInfo() {
-        return String.format("Investment Account: %s, Balance: BWP%.2f, Customer: %s %s",
+        return String.format("Investment %s | BWP %.2f | %s %s",
                 accountNumber, balance, customer.getFirstName(), customer.getSurname());
     }
 }

@@ -1,8 +1,6 @@
 package bank.system.bankingsystem;
 
 public class CorporateCustomer extends Customer {
-    private static final long serialVersionUID = 1L;
-
     private String companyName;
     private String companyAddress;
     private String registrationNumber;
@@ -15,6 +13,9 @@ public class CorporateCustomer extends Customer {
         this.companyAddress = companyAddress;
         this.registrationNumber = registrationNumber;
     }
+    public String getCompanyName(){ return companyName; }
+    public String getCompanyAddress(){ return companyAddress; }
+    public String getRegistrationNumber(){ return registrationNumber; }
 
     @Override
     public String toString() {
@@ -24,10 +25,6 @@ public class CorporateCustomer extends Customer {
 
     @Override
     public String getCustomerType() {
-        return "Corporate";
+        return "CORPORATE";
     }
-
-    public String getCompanyName() { return companyName; }
-    public String getCompanyAddress() { return companyAddress; }
-    public String getRegistrationNumber() { return registrationNumber; }
 }

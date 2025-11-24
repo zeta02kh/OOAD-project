@@ -1,10 +1,6 @@
 package bank.system.bankingsystem;
 
-import java.io.Serializable;
-
-public abstract class Customer implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public abstract class Customer {
     protected String customerId;
     protected String firstName;
     protected String surname;

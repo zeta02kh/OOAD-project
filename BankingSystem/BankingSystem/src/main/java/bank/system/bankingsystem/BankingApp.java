@@ -7,12 +7,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class BankingApp extends Application {
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/bank/system/bankingsystem/login.fxml"));
         Parent root = loader.load();
-
         Scene scene = new Scene(root, 400, 300);
         primaryStage.setTitle("Banking System - Login");
         primaryStage.setScene(scene);

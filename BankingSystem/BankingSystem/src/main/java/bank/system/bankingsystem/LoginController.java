@@ -16,6 +16,7 @@ public class LoginController {
     private BankingService bankingService;
 
     public LoginController() {
+        // create service once; it will load files
         this.bankingService = new BankingService();
     }
 
@@ -45,15 +46,10 @@ public class LoginController {
                 mainController.setBankingService(bankingService);
 
                 Stage stage = (Stage) usernameField.getScene().getWindow();
-                Scene scene = new Scene(root, 1000, 650);
+                Scene scene = new Scene(root, 800, 600);
                 stage.setScene(scene);
-
-                if ("admin".equals(username)) {
-                    stage.setTitle("Banking System - Admin Dashboard");
-                } else {
-                    stage.setTitle("Banking System - Customer Dashboard (" + username + ")");
-                }
-
+                if ("admin".equals(username)) stage.setTitle("Banking System - Admin Dashboard");
+                else stage.setTitle("Banking System - Customer Dashboard (" + username + ")");
                 stage.centerOnScreen();
 
             } catch (Exception e) {
